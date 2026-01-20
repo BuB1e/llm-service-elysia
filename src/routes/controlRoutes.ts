@@ -1,7 +1,8 @@
-import { Elysia, t } from 'elysia';
-import { IsoControlAnalysisService } from '../services/llm/controlAnalysisService';
-import { createLLMProvider } from '../config/container';
-import type { ControlAnalysisInput } from '../types/llm.types';
+import { Elysia, t } from "elysia";
+import { IsoControlAnalysisService } from "../services/llm/controlAnalysisService";
+import { createLLMProvider } from "../config/container";
+import { createAuthMiddleware, requireAuth } from "../middleware/auth";
+import type { ControlAnalysisInput } from "../types/llm.types";
 
 /**
  * Creates the control analysis routes.
@@ -14,54 +15,62 @@ export function createControlRoutes() {
   // Create the service with the provider injected
   const analysisService = new IsoControlAnalysisService(llmProvider);
 
-  return new Elysia({ prefix: '/api' })
-    // Health check endpoint
-    .get('/health', () => ({ status: 'ok', service: 'llm-service' }))
+  return (
+    new Elysia({ prefix: "/api" })
+      // Apply auth middleware to derive authBearer in this route's context
+      .use(createAuthMiddleware())
+      // Health check endpoint (no auth required)
+      .get("/health", () => ({ status: "ok", service: "llm-service" }))
 
-    // Main analysis endpoint
-    .post(
-      '/analyze-control',
-      async ({ body }) => {
-        const input: ControlAnalysisInput = {
-          controlCode: body.controlCode,
-          title: body.title,
-          description: body.description,
-          guidance: body.guidance,
-          status: body.status,
-          currentPractice: body.currentPractice,
-          evidenceSummary: body.evidenceSummary,
-          context: body.context,
-          testmode: body.testmode,
-        };
+      // Main analysis endpoint (auth required)
+      .post(
+        "/analyze-control",
+        async ({ body, bearer, path, set }) => {
+          // Check authentication
+          const authError = requireAuth(bearer, path, set);
+          if (authError) return authError;
 
-        const result = await analysisService.analyzeControl(input);
+          const input: ControlAnalysisInput = {
+            controlCode: body.controlCode,
+            title: body.title,
+            description: body.description,
+            guidance: body.guidance,
+            status: body.status,
+            currentPractice: body.currentPractice,
+            evidenceSummary: body.evidenceSummary,
+            context: body.context,
+            testmode: body.testmode,
+          };
 
-        return {
-          success: true,
-          data: result,
-        };
-      },
-      {
-        // Request body validation schema
-        body: t.Object({
-          controlCode: t.String(),
-          title: t.String(),
-          description: t.String(),
-          guidance: t.String(),
-          status: t.String(),
-          currentPractice: t.String(),
-          evidenceSummary: t.String(),
-          context: t.String(),
-          testmode: t.Optional(t.Boolean()),
-        }),
-        // Error handling
-        error({ error }) {
-          console.error('Route error:', error);
+          const result = await analysisService.analyzeControl(input);
+
           return {
-            success: false,
-            error: error instanceof Error ? error.message : 'Unknown error',
+            success: true,
+            data: result,
           };
         },
-      }
-    );
+        {
+          // Request body validation schema
+          body: t.Object({
+            controlCode: t.String(),
+            title: t.String(),
+            description: t.String(),
+            guidance: t.String(),
+            status: t.String(),
+            currentPractice: t.String(),
+            evidenceSummary: t.String(),
+            context: t.String(),
+            testmode: t.Optional(t.Boolean()),
+          }),
+          // Error handling
+          error({ error }) {
+            console.error("Route error:", error);
+            return {
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+            };
+          },
+        },
+      )
+  );
 }
