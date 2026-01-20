@@ -23,9 +23,6 @@ export class GroqProvider implements LLMProvider {
     messages: LLMMessage[],
     options?: LLMGenerateOptions,
   ): Promise<LLMResult> {
-    console.log(`🚀 GroqProvider.chat() called with model: ${this.model}`);
-    console.log(`📡 Calling: ${this.baseUrl}/chat/completions`);
-
     const resp = await fetch(`${this.baseUrl}/chat/completions`, {
       method: "POST",
       headers: {
@@ -47,14 +44,6 @@ export class GroqProvider implements LLMProvider {
     }
 
     const data = (await resp.json()) as any;
-
-    // Log Groq response details for debugging
-    console.log(`✅ Groq Response received:`);
-    console.log(`   - Request ID: ${resp.headers.get("x-request-id")}`);
-    console.log(`   - Model: ${data.model}`);
-    console.log(`   - Completion ID: ${data.id}`);
-    console.log(`   - Usage: ${JSON.stringify(data.usage)}`);
-
     const text = data.choices?.[0]?.message?.content ?? "";
 
     return { text, raw: data };

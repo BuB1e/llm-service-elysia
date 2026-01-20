@@ -6,7 +6,6 @@ import { GroqProvider } from "../interface/llm/GroqProvider";
 
 export function createLLMProvider() {
   const provider = process.env.LLM_PROVIDER ?? "openai";
-  console.log(`🔧 LLM_PROVIDER env value: "${provider}"`);
 
   if (provider === "lmstudio" || provider === "llama") {
     // LM Studio uses OpenAI-compatible API format
@@ -26,7 +25,6 @@ export function createLLMProvider() {
 
   if (provider === "groq") {
     // GroqCloud uses OpenAI-compatible API with fixed endpoint
-    console.log(`✅ Using GroqProvider with model: ${process.env.GROQ_MODEL}`);
     return new GroqProvider(
       process.env.GROQ_API_KEY!,
       process.env.GROQ_MODEL ?? "llama-3.1-8b-instant",
