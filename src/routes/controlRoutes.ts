@@ -37,9 +37,8 @@ export function createControlRoutes() {
             guidance: body.guidance,
             status: body.status,
             currentPractice: body.currentPractice,
-            evidenceSummary: body.evidenceSummary,
-            context: body.context,
-            testmode: body.testmode,
+            evidenceDescription: body.evidenceDescription,
+            userContext: body.userContext,
           };
 
           const result = await analysisService.analyzeControl(input);
@@ -58,9 +57,8 @@ export function createControlRoutes() {
             guidance: t.String(),
             status: t.String(),
             currentPractice: t.String(),
-            evidenceSummary: t.String(),
-            context: t.String(),
-            testmode: t.Optional(t.Boolean()),
+            evidenceDescription: t.Optional(t.String()),
+            userContext: t.Optional(t.String()),
           }),
           // Error handling
           error({ error }) {
