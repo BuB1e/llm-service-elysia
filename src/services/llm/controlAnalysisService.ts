@@ -43,11 +43,6 @@ export class IsoControlAnalysisService {
    * @returns AI-generated analysis and suggestions
    */
   async analyzeControl(input: ControlAnalysisInput): Promise<ControlAnalysisResult> {
-    // If testmode is enabled, just test the connection
-    if (input.testmode) {
-      return this.testConnection();
-    }
-
     // RAG-ready: In the future, this will be populated by a retrieval system
     // For now, we pass empty context
     const retrievedContext = ''; // future: retrievedContext = await rag.retrieve(input)

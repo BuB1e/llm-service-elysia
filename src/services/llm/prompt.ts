@@ -27,8 +27,8 @@ ${input.retrievedContext ?? ''}
 
 User status: ${input.status}
 Current practice: ${input.currentPractice}
-Evidence summary: ${input.evidenceSummary}
-Company context: ${input.context}
+Evidence summary: ${input.evidenceDescription}
+Company context: ${input.userContext}
 
 Task:
 1) Gap Analysis
@@ -47,8 +47,8 @@ Description: ${input.description}
 Guidance: ${input.guidance}
 Status: ${input.status}
 Current practice: ${input.currentPractice}
-Evidence summary: ${input.evidenceSummary}
-Company context: ${input.context}
+Evidence description: ${input.evidenceDescription}
+Company context: ${input.userContext}
 
 Please tell what this context is about.
 `.trim();
