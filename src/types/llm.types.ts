@@ -10,8 +10,8 @@ export interface ControlAnalysisInput {
   guidance: string;
   status: string;
   currentPractice: string;
-  evidenceDescription?: string
-  userContext?: string;
+  evidenceDescription?: string | null;
+  userContext?: string | null;
   // below this is not currently used but reserved for future use
   retrievedContext?: string; // RAG-ready: will be populated when RAG is implemented
 }

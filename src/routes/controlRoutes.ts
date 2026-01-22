@@ -57,8 +57,8 @@ export function createControlRoutes() {
             guidance: t.String(),
             status: t.String(),
             currentPractice: t.String(),
-            evidenceDescription: t.Optional(t.String()),
-            userContext: t.Optional(t.String()),
+            evidenceDescription: t.Optional(t.Union([t.String(), t.Null()])),
+            userContext: t.Optional(t.Union([t.String(), t.Null()])),
           }),
           // Error handling
           error({ error }) {
